@@ -5,13 +5,14 @@ use App\Http\Controllers\Web\{
     HomeController,
     AuthController,
     IssueController,
-    AdminController
+    AdminController,
+    AdminAuthController
 };
 
-// Página inicial
+// Rotas Públicas
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Autenticação
+// Autenticação Pública (Cidadão)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -21,13 +22,24 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Issues (protegidas por auth)
+// Rotas do Cidadão (Autenticadas)
 Route::middleware('auth')->group(function () {
     Route::resource('issues', IssueController::class)->except(['show']);
-    
-    // Admin routes
-    Route::middleware('can:admin')->group(function () {
-        Route::get('/admin/issues', [AdminController::class, 'issues'])->name('admin.issues');
-        Route::post('/admin/issues/{issue}/update-status', [AdminController::class, 'updateStatus'])->name('admin.issues.update-status');
+});
+
+// Rotas da Administração (Prefeitura)
+Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\IsAdmin::class])->group(function () {
+    // Rotas Públicas
+    Route::middleware('guest')->group(function () {
+        Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+        Route::post('login', [AdminAuthController::class, 'login']);
+    });
+
+    // Rotas Protegidas (Admin)
+    Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->group(function () {
+        Route::get('dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+        Route::get('issues', [AdminController::class, 'issues'])->name('admin.issues');
+        Route::post('issues/{issue}/update-status', [AdminController::class, 'updateStatus'])
+             ->name('admin.issues.update-status');
     });
 });

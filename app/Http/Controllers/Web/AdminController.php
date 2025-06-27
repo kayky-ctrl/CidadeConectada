@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\ReportedIssue;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('can:admin');
+        $this->middleware('is_admin');
     }
 
     public function issues()
@@ -22,6 +23,9 @@ class AdminController extends Controller
 
     public function updateStatus(Request $request, ReportedIssue $issue)
     {
+
+        $adminId = Auth::id();
+
         $validated = $request->validate([
             'status' => 'required|in:pending,in_progress,resolved,rejected',
             'comments' => 'nullable|string'
@@ -30,7 +34,7 @@ class AdminController extends Controller
         $issue->update(['status' => $validated['status']]);
         
         $issue->updates()->create([
-            'admin_id' => auth()->id(),
+            'admin_id' => $adminId,
             'status' => $validated['status'],
             'comments' => $validated['comments'] ?? 'Status atualizado'
         ]);

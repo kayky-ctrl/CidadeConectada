@@ -26,7 +26,7 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'required|string|max:20',
-            'address' => 'required|string|max:255'
+            'address' => 'required|string|max:255',
         ]);
 
         $user = \App\Models\User::create([
