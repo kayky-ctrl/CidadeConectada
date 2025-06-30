@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\ReportedIssue;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class IssueController extends Controller
 {
@@ -32,5 +33,25 @@ class IssueController extends Controller
         $issue = auth()->user()->reportedIssues()->create($validated);
 
         return redirect()->route('issues.index')->with('success', 'Issue reportado com sucesso!');
+    }
+
+    public function updateStatus(Request $request, ReportedIssue $issue)
+    {
+        $adminId = Auth::id();
+
+        $validated = $request->validate([
+            'status' => 'required|in:pending,in_progress,resolved,rejected',
+            'comments' => 'nullable|string'
+        ]);
+
+        $issue->update(['status' => $validated['status']]);
+        
+        $issue->updates()->create([
+            'admin_id' => $adminId,
+            'status' => $validated['status'],
+            'comments' => $validated['comments'] ?? 'Status atualizado'
+        ]);
+
+        return back()->with('success', 'Status atualizado com sucesso!');
     }
 }

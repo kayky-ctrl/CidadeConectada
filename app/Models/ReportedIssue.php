@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class ReportedIssue extends Model
 {
     protected $fillable = [
-    'title',
-    'description',
-    'location',
-    'category',
-    'status',
-    'photo_path',
-    'user_id'
-];
+        'title',
+        'description',
+        'location',
+        'category',
+        'status',
+        'photo_path',
+        'user_id',
+    ];
 
     public function user()
     {
@@ -26,5 +26,9 @@ class ReportedIssue extends Model
     {
         return $this->hasMany(IssueUpdate::class, 'reported_issue_id');
     }
-}
 
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+}

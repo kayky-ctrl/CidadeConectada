@@ -1,58 +1,55 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>City Maintenance System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/app-custom.css') }}">
     @stack('styles')
+
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    @php
+        // Defina os e-mails (ou IDs) dos administradores aqui
+        $admins = ['admin@example.com', 'outro@email.com'];
+    @endphp
+
+    <nav class="navbar">
         <div class="container">
-            <a class="navbar-brand" href="{{ route('home') }}">City Maintenance</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('issues.index') }}">Meus Reports</a>
+            <a class="navbar-brand" href="{{ route('home') }}">
+                <span style="font-size:1.3em;">🏙️</span>
+                City Maintenance
+            </a>
+            <ul class="navbar-nav">
+                <li><a class="nav-link" href="{{ route('issues.index') }}">Meus Reports</a></li>
+                @auth
+                    @if (in_array(auth()->user()->email, $admins))
+                        <li>
+                            <a class="nav-link" href="{{ route('issuesAdmin') }}">Painel Admin</a>
+                        </li>
+                    @endif
+                @endauth
+                @guest
+                    <li><a class="nav-link" href="{{ route('login') }}">Login</a></li>
+                    <li><a class="nav-link" href="{{ route('register') }}">Cadastro</a></li>
+                @else
+                    <li style="display:flex;align-items:center;gap:0.5rem;">
+                        <span style="color:#fff;">👤 {{ auth()->user()->name }}</span>
+                        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                            @csrf
+                            <button type="submit" class="btn-link">Sair</button>
+                        </form>
                     </li>
-                    @auth
-                        @if(auth()->user()->is_admin)
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.issues') }}">Painel Admin</a>
-                            </li>
-                        @endif
-                    @endauth
-                </ul>
-                <ul class="navbar-nav">
-                    @guest
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('register') }}">Cadastro</a>
-                        </li>
-                    @else
-                        <li class="nav-item">
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="nav-link btn btn-link">Logout</button>
-                            </form>
-                        </li>
-                    @endguest
-                </ul>
-            </div>
+                @endguest
+            </ul>
         </div>
     </nav>
-
-    <div class="container my-4">
+    <div class="container content-navbar-space" style="max-width:1100px;margin:0 auto;">
         @yield('content')
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 </body>
+
 </html>

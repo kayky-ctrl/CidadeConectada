@@ -1,37 +1,56 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Bem-vindo ao Sistema de Manutenção Urbana') }}</div>
+@php
+    $admins = ['admin@example.com'];
+@endphp
 
-                <div class="card-body">
-                    @auth
-                        <p>Olá, {{ auth()->user()->name }}!</p>
-                        <a href="{{ route('issues.index') }}" class="btn btn-primary">
-                            Ver meus reports
+<div class="home-flex-center">
+    <div class="home-card">
+        <div class="home-row">
+            <div class="home-col-img">
+                <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="Cidadão" class="home-img">
+                <h2 class="home-title">Bem-vindo!</h2>
+                <p class="home-lead">Sua voz faz a cidade melhor.</p>
+            </div>
+            <div class="home-col-content">
+                @auth
+                    <div class="home-greeting">
+                        <h3>Olá, {{ auth()->user()->name }}!</h3>
+                        <p class="home-muted">Acompanhe e reporte problemas urbanos facilmente.</p>
+                    </div>
+                    <div class="home-btns">
+                        <a href="{{ route('issues.index') }}" class="home-btn home-btn-primary">
+                            📋 Ver meus reports
                         </a>
-                        @if(auth()->user()->is_admin)
-                            <a href="{{ route('admin.issues') }}" class="btn btn-secondary ms-2">
-                                Painel Administrativo
+
+                        @if(in_array(auth()->user()->email, $admins))
+                            <a href="{{ route('issuesAdmin') }}" class="home-btn home-btn-secondary">
+                                🛠️ Painel Administrativo
                             </a>
                         @endif
-                    @else
-                        <p>Faça login para reportar problemas urbanos</p>
-                        <div class="d-flex gap-2">
-                            <a href="{{ route('login') }}" class="btn btn-primary">
-                                {{ __('Login') }}
-                            </a>
-                            <a href="{{ route('register') }}" class="btn btn-outline-primary">
-                                {{ __('Cadastre-se') }}
-                            </a>
-                        </div>
-                    @endauth
-                </div>
+                    </div>
+                @else
+                    <div class="home-greeting">
+                        <h3>Participe da transformação!</h3>
+                        <p class="home-muted">Faça login para reportar problemas urbanos e acompanhar suas solicitações.</p>
+                    </div>
+                    <div class="home-btns">
+                        <a href="{{ route('login') }}" class="home-btn home-btn-primary">
+                            🔑 Login
+                        </a>
+                        <a href="{{ route('register') }}" class="home-btn home-btn-secondary">
+                            📝 Cadastre-se
+                        </a>
+                    </div>
+                @endauth
             </div>
+        </div>
+        <div class="home-tip">
+            <span>💡 Dica: quanto mais cidadãos participam, mais eficiente é a manutenção da cidade!</span>
         </div>
     </div>
 </div>
-@endsection
+@push('styles')
+
+@endpush

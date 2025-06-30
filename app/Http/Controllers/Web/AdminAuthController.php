@@ -26,11 +26,11 @@ class AdminAuthController extends Controller
 
             // Debug: verifique os dados do usuário
             Log::info('Login realizado', [
+                'auth' => Auth::user(),
                 'user_id' => Auth::id(),
-                'is_admin' => Auth::user()->is_admin
             ]);
 
-            if (Auth::user()->is_admin) {
+            if (Auth::user()) {
                 return redirect()->intended('/admin/dashboard');
             }
 

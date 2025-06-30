@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('issues/{issue}/rate', [ReportedIssueController::class, 'rate']);
     
     // Rotas para administradores
-    Route::prefix('admin')->middleware('is_admin')->group(function () {
+    Route::prefix('admin')->middleware('auth')->group(function () {
         Route::apiResource('issues', AdminIssueController::class)->except(['store']);
         Route::post('issues/{issue}/update-status', [AdminIssueController::class, 'updateStatus']);
     });

@@ -8,7 +8,7 @@ use App\Models\IssueUpdate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\IsAdmin;
-use App\Http\Controllers\Api\V1\Admin\ValidationException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -18,7 +18,7 @@ class AdminIssueController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('is_admin');
+        $this->middleware('auth');
     }
 
     public function index()
@@ -44,7 +44,7 @@ class AdminIssueController extends Controller
             $issue = ReportedIssue::findOrFail($issueId);
 
             $issue->updates()->create([
-                'admin_id' => auth()->id(),
+                'admin_id' => optional(Auth::user())->id,
                 'status' => $validated['status'],
                 'comments' => $validated['comments'] ?? 'Status updated'
             ]);

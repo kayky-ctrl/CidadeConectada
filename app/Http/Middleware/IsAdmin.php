@@ -13,7 +13,7 @@ class IsAdmin
     {
         // Verificação em 2 etapas
         if (!Auth::check()) {
-            return redirect()->route('admin.login')->with('error', 'Por favor faça login');
+            return redirect()->route('login')->with('error', 'Por favor faça login');
         }
 
         if (!Auth::user()->is_admin) {

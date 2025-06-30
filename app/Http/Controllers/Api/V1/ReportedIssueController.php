@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ReportedIssue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ReportedIssueController extends Controller
 {
@@ -16,7 +17,7 @@ class ReportedIssueController extends Controller
 
     public function store(Request $request)
     {
-        \Log::info('Dados recebidos:', $request->all()); // Log dos dados de entrada
+        Log::info('Dados recebidos:', $request->all()); // Log dos dados de entrada
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -26,19 +27,19 @@ class ReportedIssueController extends Controller
             'photo' => 'nullable|image|max:2048',
         ]);
 
-        \Log::info('Dados validados:', $validated); // Log dos dados validados
+        Log::info('Dados validados:', $validated); // Log dos dados validados
 
         try {
             $issue = ReportedIssue::create(array_merge($validated, [
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'status' => 'pending',
             ]));
 
-            \Log::info('Issue criada:', $issue->toArray()); // Log do objeto criado
+            Log::info('Issue criada:', $issue->toArray()); // Log do objeto criado
 
             return response()->json($issue, 201);
         } catch (\Exception $e) {
-            \Log::error('Erro ao criar issue:', ['error' => $e->getMessage()]);
+            Log::error('Erro ao criar issue:', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'Erro interno'], 500);
         }
     }

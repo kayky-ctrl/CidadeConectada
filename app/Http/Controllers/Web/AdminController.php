@@ -17,7 +17,7 @@ class AdminController extends Controller
 
     public function issues()
     {
-        $issues = ReportedIssue::with(['user', 'updates'])->latest()->get();
+        $issues = ReportedIssue::with(['user', 'updates', 'ratings.user'])->latest()->get();
         return view('admin.issues', compact('issues'));
     }
 
